@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 5226449656679588442}
   - component: {fileID: 4908738273583123481}
   - component: {fileID: 5725475727457057476}
+  - component: {fileID: -658806792715337821}
   m_Layer: 29
   m_Name: MainCharacter
   m_TagString: Untagged
@@ -190,6 +191,7 @@ Transform:
   - {fileID: 2474208263104463746}
   - {fileID: 3347111138243522598}
   - {fileID: 9156053473793362052}
+  - {fileID: 1833936505620675267}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -103.65, z: 0}
@@ -253,6 +255,7 @@ MonoBehaviour:
   _maximumAirDampening: 0.75
   _landingAudioPrefab: {fileID: 7271271861184822428, guid: 9c9a2d76f669e67408ded4b91ce5fa4f, type: 3}
   _runningAudioPrefab: {fileID: 1673684251539739115, guid: f66e90eb2a534194d94bd9bd0ac54b1d, type: 3}
+  _jump: 0
 --- !u!114 &6370243928297569462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,6 +362,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 5226449656679588442}
   _networkObjectCache: {fileID: 5226449656679588442}
   _baseHealth: 100
+  _regenerateRate: 3
 --- !u!114 &49482706012724626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,7 +437,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 3
+  <PrefabId>k__BackingField: 5
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -488,7 +492,26 @@ MonoBehaviour:
   armSurface: {fileID: 7716208066569756582}
   redMaterial: {fileID: -5283888208800200948, guid: ba1bc19bafc770a4f8b5fadaeb3a9e66, type: 3}
   blueMaterial: {fileID: 2100000, guid: 496935fcb9c527041a379ee33aa166ae, type: 2}
+  miniMapLengendHandler: {fileID: -658806792715337821}
   <IsCarringEnemyFlag>k__BackingField: 0
+--- !u!114 &-658806792715337821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3014089425924094651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e5f0ac4394b1d34e80781e2fafed895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MinimapLegendLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  legendType: 0
+  legendPrefab: {fileID: 2081052817486768274, guid: 89fe0d09049a2604e990f93dc75c134b, type: 3}
+  legendSpriteRenderer: {fileID: 0}
 --- !u!1 &3804197861599624603
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,6 +588,81 @@ MonoBehaviour:
     _maximumRecoilMultiplier: 3
     _fireKickRate: 0.3
     _settleRate: 1
+--- !u!1 &4545833161234189815
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1833936505620675267}
+  - component: {fileID: 676699107026946862}
+  m_Layer: 0
+  m_Name: MiniMap Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1833936505620675267
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4545833161234189815}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 581, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2274154560096405672}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!20 &676699107026946862
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4545833161234189815}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_SensorSize: {x: 70.41, y: 52.63}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 5.4813685
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 930.2
+  field of view: 156.46727
+  orthographic: 1
+  orthographic size: 200
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 8400000, guid: c6bc4387f081a644288b7ed0a632a3ba, type: 2}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
 --- !u!1 &7087368879456334165
 GameObject:
   m_ObjectHideFlags: 0

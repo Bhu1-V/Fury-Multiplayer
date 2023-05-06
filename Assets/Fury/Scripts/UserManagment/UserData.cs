@@ -49,12 +49,41 @@ public class UserData : NetworkBehaviour {
     [SerializeField]
     Material blueMaterial;
 
-    [field: SyncVar(ReadPermissions = ReadPermission.ExcludeOwner)]
+    [SerializeField]
+    MinimapVisibleHandler miniMapLengendHandler;
+
+    [SerializeField]
+    Transform miniMapCamera;
+
+    [field: SyncVar(ReadPermissions = ReadPermission.ExcludeOwner, OnChange = nameof(OnCarringFlagChanged))]
     public bool IsCarringEnemyFlag { get; [ServerRpc(RunLocally = true)] set; }
+
+    private void OnCarringFlagChanged(bool oldValue, bool newValue, bool asServer) {
+        Debug.Log($"Player {gameObject.name} Carring Flag = {IsCarringEnemyFlag}");
+        if(newValue) {
+            miniMapLengendHandler.UpdatePlayerWithFlagLegend(_team);
+        } else {
+            miniMapLengendHandler.UpdateLegend(_team);
+        }
+    }
+
+    private void Awake() {
+        miniMapCamera = GetComponentInChildren<Camera>().transform;
+    }
 
     public override void OnStartClient() {
         base.OnStartClient();
-        if(!IsOwner) return;
+
+        if(miniMapLengendHandler == null) miniMapLengendHandler = GetComponent<MinimapVisibleHandler>();
+        if(miniMapLengendHandler) {
+            Debug.Log($"Starting a Client and Updating the Legend for Client {gameObject.name} Team = {_team}");
+            miniMapLengendHandler.UpdateLegend(_team);
+        }
+
+        if(!IsOwner) {
+            miniMapCamera.gameObject.SetActive(false);
+            return;
+        }
         string userNameText = PlayerPrefs.GetString("user_name", "");
         Debug.Log($"OnClient Started And Calling Server RPC to Assign Team Setting UserName = {userName}");
         CmdAssignTeam(this, userNameText);
@@ -106,6 +135,7 @@ public class UserData : NetworkBehaviour {
 
     public void TeamChanged(Team oldValue, Team newValue, bool asServer) {
         Debug.Log($"Team got Changed from {oldValue} to {newValue} and asServer = {asServer}");
+
         if(team == Team.Blue) {
             bodySurface.material = blueMaterial;
             armSurface.material = blueMaterial;
@@ -113,6 +143,12 @@ public class UserData : NetworkBehaviour {
             bodySurface.material = redMaterial;
             armSurface.material = redMaterial;
         }
+
+        if(miniMapLengendHandler) {
+            Debug.Log($"Team got and Mini Map Legened Changed for Player {gameObject.name} to Team = {_team}");
+            miniMapLengendHandler.UpdateLegend(_team);
+        }
+
         if(!IsOwner) return;
         if(SessionManager.Instance.IsOwner) {
             SessionManager.Instance.UpdatePlayerTeam(userName, oldValue, newValue);

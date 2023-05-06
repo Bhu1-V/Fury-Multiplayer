@@ -332,11 +332,15 @@ public class SessionManager : NetworkBehaviour {
         if(!IsServer) return;
         if(!_capturedUserData.IsCarringEnemyFlag) return;
 
-        Debug.Log($"Brodcasting FlagDrop = {_capturedFlagTeam}");
+        Debug.Log($"KKKKKKK: Brodcasting FlagDrop = {_capturedFlagTeam}");
         _capturedUserData.GetComponent<Health>().OnDeath -= OnFlagedPlayerDeath;
+        _capturedUserData.IsCarringEnemyFlag = false;
         if(_capturedFlagTeam != UserData.Team.None) {
             ServerManager.Broadcast(new Flag.FlagDropData { droppedFlagTeam = _capturedFlagTeam });
         }
+
+        string broadcastData = $"User:{_capturedUserData.userName} Dropped {((_capturedUserData.team == UserData.Team.Blue) ? UserData.Team.Red : UserData.Team.Blue)}'s Flag";
+        ServerManager.Broadcast(new GameLogEntry { logEntry = broadcastData, logColor = "Red" });
 
         _capturedUserData = null;
         _capturedFlagTeam = UserData.Team.None;

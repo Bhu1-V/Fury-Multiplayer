@@ -9,9 +9,12 @@ namespace Fury.Characters.Vitals {
         #region Public.
         /// <summary>
         /// Dispatched when health changes with old, new, and max health values.
-        /// </summary>
         public event Action<int, int, int> OnHealthChanged;
         public static event Action<Health, int, int, int> GlobalOnHealthChanged;
+        /// </summary>/// <summary>
+        /// Dispatched when health Regenerated with old, new, and max health values.
+        /// </summary>
+        public event Action<int, int, int> OnHealthRegenrated;
         /// <summary>
         /// Dispatched when health is depleted.
         /// </summary>
@@ -42,6 +45,13 @@ namespace Fury.Characters.Vitals {
         [Tooltip("Health to start with.")]
         [SerializeField]
         private int _baseHealth = 100;
+
+        /// <summary>
+        /// Health to Regenerate.
+        /// </summary>
+        [Tooltip("Health to Regenerate every second.")]
+        [SerializeField]
+        private int _regenerateRate = 3;
         #endregion
 
         private void Awake() {
@@ -69,6 +79,18 @@ namespace Fury.Characters.Vitals {
             RemoveHealth(damage, hitbox.Multiplier);
         }
 
+        /// <summary>
+        /// Restores health to maximum health.
+        /// </summary>
+        public void RegenerateHealth() {
+            int oldHealth = CurrentHealth;
+            CurrentHealth = oldHealth + _regenerateRate;
+
+            OnHealthChanged?.Invoke(oldHealth, CurrentHealth, MaximumHealth);
+
+            if(base.IsServer)
+                ObserversRegenerateHealth();
+        }
 
         /// <summary>
         /// Restores health to maximum health.
@@ -139,6 +161,18 @@ namespace Fury.Characters.Vitals {
                 return;
 
             RestoreHealth();
+        }
+
+        /// <summary>
+        /// Sent to clients when health is regerated.
+        /// </summary>
+        [ObserversRpc]
+        private void ObserversRegenerateHealth() {
+            //Server already restored health. If we don't exit this will be an endless loop. This is for client host.
+            if(base.IsServer)
+                return;
+
+            RegenerateHealth();
         }
 
         /// <summary>

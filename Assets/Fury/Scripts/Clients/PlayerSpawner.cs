@@ -71,6 +71,7 @@ namespace Fury.Clients {
                 //If the character is not spawned yet.
                 if(SpawnedCharacterData.NetworkObject == null) {
                     GameObject r = Instantiate(_characterPrefab, spawn.position, Quaternion.Euler(0f, spawn.eulerAngles.y, 0f));
+                    r.name = $"Character {Helper.GenerateRandomString(10)}";
                     base.Spawn(r, base.Owner);
 
                     SetupSpawnedCharacterData(r);

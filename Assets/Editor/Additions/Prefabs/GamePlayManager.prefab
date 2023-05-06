@@ -73,7 +73,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9040434183510267100}
-  - component: {fileID: 9040434183510267101}
   - component: {fileID: 9040434183510267098}
   m_Layer: 0
   m_Name: GamePlayManager
@@ -98,23 +97,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9040434183510267101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9040434183510267103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93153d75bec240c4b992324d851967b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 9040434183510267098}
-  _networkObjectCache: {fileID: 9040434183510267098}
-  _teamAParent: {fileID: 9040434183822230113}
-  _teamBParent: {fileID: 9040434182586571454}
 --- !u!114 &9040434183510267098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,7 +113,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 9040434183510267101}
+  - {fileID: 0}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -143,7 +125,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 2533952473
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 711867625692332713
+  <AssetPathHash>k__BackingField: 1015247909926898465
   _sceneNetworkObjects:
   - {fileID: 9040434183510267098}
 --- !u!1 &9040434183822230112

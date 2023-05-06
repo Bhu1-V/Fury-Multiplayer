@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b41873cf2a865a24b8ae3d98b1e9ed5d, type: 3}
+  m_Name: LengendData
+  m_EditorClassIdentifier: 
+  MinimapLegendLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  miniMapLegends:
+  - type: 0
+    texture: {fileID: 21300000, guid: 903de1a01317ab34ea8117757ddec94d, type: 3}
+  - type: 1
+    texture: {fileID: 21300000, guid: c17e9beb6e96a044b9355af0b0a136a9, type: 3}
+  - type: 2
+    texture: {fileID: 21300000, guid: 6473a98ee15695649aaf3f0814ed70c6, type: 3}
+  - type: 3
+    texture: {fileID: 21300000, guid: 6e666f197e3bcbb45b72863786bf0ad4, type: 3}
+  blueColor: {r: 0.22241013, g: 0.2755671, b: 0.9622642, a: 1}
+  redColor: {r: 1, g: 0.36320752, b: 0.36320752, a: 1}

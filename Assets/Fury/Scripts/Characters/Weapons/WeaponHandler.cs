@@ -23,7 +23,6 @@ namespace Fury.Characters.Weapons {
 
     public class WeaponHandler : NetworkBehaviour {
 
-        #region Public.
         /// <summary>
         /// Dispatched when ammunition in the clip changes for the current weapon.
         /// </summary>
@@ -55,18 +54,14 @@ namespace Fury.Characters.Weapons {
                     return null;
             }
         }
-        #endregion
 
-        #region Serialized.
         /// <summary>
         /// Transform which holds weapon data.
         /// </summary>
         [Tooltip("Transform which holds weapon data.")]
         [SerializeField]
         private GameObject _weaponsParent;
-        #endregion
 
-        #region Private.
         /// <summary>
         /// Health for this character.
         /// </summary>
@@ -125,14 +120,11 @@ namespace Fury.Characters.Weapons {
         private float _selectFirstAvailableWeaponTime = -1f;
 
         private UserData _userData;
-        #endregion
 
-        #region Const.
         /// <summary>
         /// Weapons the player starts with.
         /// </summary>
-        private const WeaponNames STARTING_WEAPONS = (WeaponNames.M4A1 | WeaponNames.Glock | WeaponNames.Knife);
-        #endregion
+        private WeaponNames startingWeapons = (WeaponNames.M4A1 | WeaponNames.Glock | WeaponNames.FragGrenade | WeaponNames.Knife);
 
         private void Awake() {
             FirstInitialize();
@@ -197,6 +189,11 @@ namespace Fury.Characters.Weapons {
                 }
             }
 
+            // If is owner then update the Starting weapons from the saved data locally.
+            //if(isOwner) {
+            //    UpdateStartingWeapons();
+            //}
+
             //Gives standard weapons to character. Run on client and server.
             AddDefaultWeaponsToInventory();
 
@@ -231,7 +228,7 @@ namespace Fury.Characters.Weapons {
             //Sync items which are not normally present.
             foreach(Weapon w in Weapons) {
                 //If not a starting weapon see if this player has it.
-                if(!STARTING_WEAPONS.Contains(w.WeaponName)) {
+                if(!startingWeapons.Contains(w.WeaponName)) {
                     if(w.InInventory) {
                         WeaponReserveData wrd = new WeaponReserveData {
                             WeaponName = w.WeaponName,
@@ -253,9 +250,38 @@ namespace Fury.Characters.Weapons {
         }
 
         /// <summary>
+        /// Update Starting weapons.
+        /// </summary>
+        //private void UpdateStartingWeapons() {
+        //    PrimaryWeaponType curretnPrimaryWeapon = (PrimaryWeaponType)PlayerPrefs.GetInt(WeaponNameConstants.CURRENT_PRIMARY_WEAPON_TYPE, -1);
+
+        //    if(curretnPrimaryWeapon != PrimaryWeaponType.None) {
+        //        startingWeapons = (WeaponNames.Glock | WeaponNames.FragGrenade | WeaponNames.Knife);
+
+        //        switch(curretnPrimaryWeapon) {
+        //            case PrimaryWeaponType.Thompson:
+        //                startingWeapons |= WeaponNames.Thompson;
+        //                break;
+
+        //            case PrimaryWeaponType.Shotgun:
+        //                startingWeapons |= WeaponNames.Shotgun;
+        //                break;
+
+        //            case PrimaryWeaponType.Sniper:
+        //                startingWeapons |= WeaponNames.Sniper;
+        //                break;
+
+        //            case PrimaryWeaponType.None:
+        //                break;
+        //        }
+        //    }
+        //}
+
+        /// <summary>
         /// Received when the character is respawned.
         /// </summary>
         private void Health_OnRespawned() {
+            //UpdateStartingWeapons();
             AddDefaultWeaponsToInventory();
 
             //Set to 0f to select a weapon next frame if client.
@@ -413,7 +439,7 @@ namespace Fury.Characters.Weapons {
         private void AddDefaultWeaponsToInventory() {
             //Simulates picking up weapons.
             for(int i = 0; i < Weapons.Length; i++) {
-                if(STARTING_WEAPONS.Contains(Weapons[i].WeaponName))
+                if(startingWeapons.Contains(Weapons[i].WeaponName))
                     AddWeaponToInventory(i);
             }
         }
@@ -999,7 +1025,6 @@ namespace Fury.Characters.Weapons {
             Fire(default, position, forward);
         }
 
-        #region Weapon switching.
         /// <summary>
         /// Selects the first weapon available in Weapons.
         /// </summary>
@@ -1203,10 +1228,5 @@ namespace Fury.Characters.Weapons {
             //Try to equip desired index. If valid setup weapon change data.
             EquipWeapon(desiredIndex, base.IsOwner);
         }
-        #endregion
-
-
     }
-
-
 }

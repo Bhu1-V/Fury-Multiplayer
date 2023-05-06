@@ -23,14 +23,27 @@ public class Flag : NetworkBehaviour {
     public string FLAG_CAPTURE_SUCCESS = "flag_Capture_Success";
     public string FLAG_CAPTURE_START = "flag_Capture_Start";
 
+    public MinimapVisibleHandler miniMapVisiblehandler;
+
     private void OnEnable() {
         InstanceFinder.ClientManager.RegisterBroadcast<FlagCaptureData>(OnFlagCaptureDataReceived);
         InstanceFinder.ClientManager.RegisterBroadcast<FlagDropData>(OnFlagDropDataReceived);
         InstanceFinder.ServerManager.RegisterBroadcast<FlagDropData>(OnClientDropDataReceive);
     }
 
+    private void Start() {
+        Debug.Log($"Updating Flags Map Legend {flagTeam}");
+        if(miniMapVisiblehandler == null) miniMapVisiblehandler = GetComponent<MinimapVisibleHandler>();
+        miniMapVisiblehandler.UpdateLegend(flagTeam);
+    }
+
     private void OnClientDropDataReceive(NetworkConnection conn, FlagDropData flagDropData) {
         InstanceFinder.ServerManager.Broadcast(flagDropData);
+    }
+
+    public override void OnStartClient() {
+        base.OnStartClient();
+        Activate(!isCaptured);
     }
 
     private void OnDisable() {
@@ -56,7 +69,7 @@ public class Flag : NetworkBehaviour {
     }
 
     public void OnFlagDropDataReceived(FlagDropData flagDropData) {
-        Debug.Log($"Received Brodcast = {flagDropData.droppedFlagTeam}'s team flag Dropped");
+        Debug.Log($"Received Brodcast = by {flagTeam} of {flagDropData.droppedFlagTeam}'s team flag Dropped");
         if(flagTeam == flagDropData.droppedFlagTeam) {
             FlagDrop();
         }
@@ -89,6 +102,7 @@ public class Flag : NetworkBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
+        Debug.Log($"Collision Triggered = {System.Convert.ToString(other.gameObject.layer, 2)}");
         if(IsServer) {
             UserData userData = other.GetComponent<UserData>();
             if(userData) {
@@ -107,6 +121,7 @@ public class Flag : NetworkBehaviour {
                 }
 
                 if(!string.IsNullOrEmpty(flagCaptureType)) {
+
                     Debug.Log($"Brodcating {flagCaptureType} and userName = {userData.userName} and collided Team = {flagTeam}");
                     InstanceFinder.ServerManager.Broadcast(new FlagCaptureData(flagCaptureType, userData, flagTeam));
                 }
@@ -183,5 +198,9 @@ public class Flag : NetworkBehaviour {
     private void Activate(bool value) {
         GetComponent<Collider>().enabled = value;
         GetComponent<MeshRenderer>().enabled = value;
+        if(miniMapVisiblehandler) {
+            miniMapVisiblehandler.SetLegendActive(value);
+            miniMapVisiblehandler.UpdateLegend(flagTeam);
+        }
     }
 }

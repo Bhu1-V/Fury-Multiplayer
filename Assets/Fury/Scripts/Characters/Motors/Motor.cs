@@ -19,133 +19,59 @@ namespace Fury.Characters.Motors {
     /// Controls server authoritative movement.
     /// </summary>
     public class Motor : NetworkBehaviour {
-        #region Serialized.
         [Header("Motor")]
-        /// <summary>
-        /// How much to dampen external forces by per fixed update. This is applied at the beginning of fixed update.
-        /// </summary>
+
         [Tooltip("How much to dampen external forces by per fixed update. This is applied at the beginning of fixed update.")]
         [SerializeField]
         private float _forceDampening = 5f;
-        /// <summary>
-        /// How fast to move the motor. Can also be a force value.
-        /// </summary>
+
         [Tooltip("How fast to move.")]
         [SerializeField]
         private float _baseMoveRate = 1.65f;
-        /// <summary>
-        /// How high to jump.
-        /// </summary>
+
         [Space(5f)]
         [Tooltip("How high to jump.")]
         [SerializeField]
         private float _jumpHeight = 2f;
-        /// <summary>
-        /// How often player can jump.
-        /// </summary>
+
         [Tooltip("How often player can jump.")]
         [SerializeField]
         private float _jumpInterval = 1f;
-        /// <summary>
-        /// Maximum amount to dampen air movement when moving in the opposite direction of initial jump direction.
-        /// </summary>
+
         [Tooltip("Maximum amount to dampen air movement when moving in the opposite direction of initial jump direction.")]
         [Range(0f, 1f)]
         [SerializeField]
         private float _maximumAirDampening = 0.75f;
 
         [Header("Audio")]
-        /// <summary>
-        /// Audio to play when landing.
-        /// </summary>
+
         [Tooltip("Audio to play when landing.")]
         [SerializeField]
         private GameObject _landingAudioPrefab;
-        /// <summary>
-        /// Audio to play when running.
-        /// </summary>
+
         [Tooltip("Audio to play when running.")]
         [SerializeField]
         private GameObject _runningAudioPrefab;
-        #endregion
 
-        #region Private.
-        /// <summary>
-        /// CharacterController on this object.
-        /// </summary>
+
         private CharacterController _controller;
-        /// <summary>
-        /// AnimatorController on this object.
-        /// </summary>
         private AnimatorController _animatorController;
-        /// <summary>
-        /// Vertical velocity to apply.
-        /// </summary>
         private float _verticalVelocity;
-        /// <summary>
-        /// Next time player is allowed to jump.
-        /// </summary>
         private float _nextAllowedJumpTime = 0f;
-        /// <summary>
-        /// True to jump next frame.
-        /// </summary>
         private bool _jump = false;
-        /// <summary>
-        /// Starting step offset for the controller.
-        /// </summary>
         private float _defaultStepOffset;
-        /// <summary>
-        /// True if the controller is grounded during the update tick, or according to the controller.
-        /// </summary>
         private bool _isGrounded;
-        /// <summary>
-        /// Current forces to apply towards motor. This could be used to simulate knockback.
-        /// </summary>
         private Vector3 _externalForces = Vector3.zero;
-        /// <summary>
-        /// Moving direction when jumping. Used to dampen movement in air.
-        /// </summary>
         private Vector3 _lastJumpDirection = Vector3.zero;
-        /// <summary>
-        /// True if running, as determined by inputs.
-        /// </summary>
         private bool _running = false;
-        /// <summary>
-        /// Next time running audio may play.
-        /// </summary>
         private float _nextRunningAudioTime;
-        /// <summary>
-        /// Becomes true when grounded has changed. Can be set in fixed update or update since isUpdateGrounded is set in both.
-        /// </summary>
         private bool _groundedChanged = false;
-        /// <summary>
-        /// WeaponHandler on this object.
-        /// </summary>
         private WeaponHandler _weaponHandler;
-        /// <summary>
-        /// Last time landing audio has played. This is used to stop land audio from playing rapidly when chain falling off ledges.
-        /// </summary>
         private float _lastLandAudioTime = -1f;
-        /// <summary>
-        /// Last rotation on owner when replicate data was built.
-        /// </summary>
         private float _lastOwnerRotation;
-        #endregion
-
-        #region Constants.
-        /// <summary>
-        /// Multiplier to apply towards move rate when walking or crouching.
-        /// </summary>
         private const float WALK_CROUCH_PERCENT = 0.525f;
-        /// <summary>
-        /// How frequently running audio may play.
-        /// </summary>
         private const float RUNNING_AUDIO_INTERVAL = 0.35f;
-        /// <summary>
-        /// Multiplier to apply to gravity for snappier jumps.
-        /// </summary>
         private const float GRAVITY_MULTIPLIER = 2f;
-        #endregion
 
         private void Awake() {
             this.enabled = false;
@@ -162,9 +88,7 @@ namespace Fury.Characters.Motors {
             base.TimeManager.OnTick -= TimeManager_OnTick;
         }
 
-        /// <summary>
         /// Phsyics update step. Called before Update.
-        /// </summary>
         private void TimeManager_OnTick() {
             //Authoritive client or server.
             if(base.IsOwner || base.IsServer) {
@@ -188,9 +112,7 @@ namespace Fury.Characters.Motors {
         }
 
 
-        /// <summary>
         /// Frame update step.
-        /// </summary>
         private void Update() {
             //If owner.
             if(base.IsOwner) {
@@ -203,10 +125,7 @@ namespace Fury.Characters.Motors {
         }
 
 
-        /// <summary>
         /// Checks if landing audio should be played on owner.
-        /// </summary>
-        /// <param name="groundedChanged"></param>
         private void CheckPlayLandedAudio() {
             if(!_groundedChanged)
                 return;
@@ -217,9 +136,7 @@ namespace Fury.Characters.Motors {
                 PlayLandingAudio();
         }
 
-        /// <summary>
         /// Initializes this script for anyone with authority or if the server.
-        /// </summary>
         private void NetworkInitialize(bool authoritiveOrServer) {
             _controller = GetComponent<CharacterController>();
             if(authoritiveOrServer) {
@@ -237,9 +154,7 @@ namespace Fury.Characters.Motors {
             this.enabled = true;
         }
 
-        /// <summary>
         /// Plays audio used for landing. Broadcast to other players afterwards.
-        /// </summary>
         private void PlayLandingAudio() {
             float groundAudioInterval = 0.250f;
             if(Time.time - _lastLandAudioTime < groundAudioInterval)
@@ -261,9 +176,7 @@ namespace Fury.Characters.Motors {
             }
         }
 
-        /// <summary>
         /// Plays landing audio over clients.
-        /// </summary>
         [ObserversRpc]
         private void ObserversPlayLandingAudio() {
             //Ignore if owner or server as it was played locally.
@@ -273,26 +186,20 @@ namespace Fury.Characters.Motors {
             PlayLandingAudio();
         }
 
-        /// <summary>
         /// Received when character is respawned.
-        /// </summary>
         private void Health_OnRespawned() {
             this.enabled = true;
             _controller.enabled = true;
         }
 
-        /// <summary>
         /// Received when character is dead.
-        /// </summary>
         private void Health_OnDeath() {
             _verticalVelocity = 0f;
             _controller.enabled = false;
             this.enabled = false;
         }
 
-        /// <summary>
         /// Sets velocity to 0f when grounded.
-        /// </summary>
         private void SetGroundedVelocity(float deltaTime, bool asServer, bool replaying) {
             /* Rapidly reduce gravity when grounded so falls aren't sudden when moving
              * off edges. Also move towards this gravity amount over time so gravity
@@ -302,10 +209,7 @@ namespace Fury.Characters.Motors {
                 _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, -1f, (-Physics.gravity.y * GRAVITY_MULTIPLIER * 2f) * deltaTime);
         }
 
-        /// <summary>
         /// Received when the character controller hits an object during move.
-        /// </summary>
-        /// <param name="hit"></param>
         private void OnControllerColliderHit(ControllerColliderHit hit) {
             //Cancel jump velocity if hitting something above.
             if(_verticalVelocity > 0f && hit.moveDirection.y > 0f) {
@@ -315,10 +219,7 @@ namespace Fury.Characters.Motors {
             }
         }
 
-        /// <summary>
         /// Sets if the controller is grounded.
-        /// </summary>
-        /// <returns>Returns if grounded has changed.</returns>
         private void SetIsGrounded(bool replaying, out bool changed) {
             //State before checking for ground.
             bool previousGrounded = _isGrounded;
@@ -326,11 +227,7 @@ namespace Fury.Characters.Motors {
             changed = (previousGrounded != _isGrounded);
         }
 
-        /// <summary>
         /// Checks for ground beneath the player.
-        /// </summary>
-        /// <param name="extraDistance"></param>
-        /// <returns></returns>
         private bool CastForGround(float extraDistance = 0.05f) {
             float radius = _controller.radius + (_controller.skinWidth / 2f);
             //Start right in the center.
@@ -349,10 +246,7 @@ namespace Fury.Characters.Motors {
             return isGrounded;
         }
 
-        /// <summary>
         /// Sets the layer for Hitboxes.
-        /// </summary>
-        /// <param name="toIgnore">True to set to ignorePhysics, false to set to default.</param>
         private void SetCharacterLayer(bool toIgnore) {
             int layer = (toIgnore) ?
                 Layers.LayerMaskToLayerNumber(GlobalManager.LayerManager.IgnoreCollisionLayer) :
@@ -361,9 +255,7 @@ namespace Fury.Characters.Motors {
             gameObject.layer = layer;
         }
 
-        /// <summary>
         /// Conditionally adjust steps height.
-        /// </summary>
         private void SetStepOffset() {
             /* Don't allow stepping when in the air. This is so the client cannot step up on cliffs when falling in front of them.
              * This is an issue with the unity character controller that would maybe be good for ledge grabbing, but not for
@@ -371,26 +263,19 @@ namespace Fury.Characters.Motors {
             _controller.stepOffset = (_isGrounded && _verticalVelocity <= 0f) ? _defaultStepOffset : 0f;
         }
 
-        /// <summary>
         /// Applies gravity to verticalVelocity.
-        /// </summary>
         private void ApplyGravity(ref float verticalVelocity, float deltaTime) {
             //Multiply gravity by 2 for snappier jumps.
             verticalVelocity += (Physics.gravity.y * GRAVITY_MULTIPLIER) * deltaTime;
             verticalVelocity = Mathf.Max(verticalVelocity, Physics.gravity.y * GRAVITY_MULTIPLIER);
         }
 
-        /// <summary>
         /// Dampens current external forces.
-        /// </summary>
         private void DampenExternalForces(float deltaTime) {
             _externalForces = Vector3.MoveTowards(_externalForces, Vector3.zero, _forceDampening * deltaTime);
         }
 
-        /// <summary>
         /// Returns if can jump.
-        /// </summary>
-        /// <returns></returns>
         private bool CanJump() {
             /* Check for ground using a tiny bit of extra distance. This is for when going down slopes
              * where the player may break ground slightly. */
@@ -408,9 +293,8 @@ namespace Fury.Characters.Motors {
 
             return true;
         }
-        /// <summary>
+
         /// Applies jump.
-        /// </summary>
         private void Jump(bool replaying) {
             _verticalVelocity = _jumpHeight;
 
@@ -423,11 +307,7 @@ namespace Fury.Characters.Motors {
         }
 
 
-        /// <summary>
         /// Returns true if a blocked direction. Can be true when moving against a path the controller shouldn't allow.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
         private bool BlockedDirection(ref ReplicateData input, float moveRate, float deltaTime) {
             /* ref is abused here because the structure is so large it's faster
              * to pass by reference rather than have the structure values copied. */
@@ -454,11 +334,8 @@ namespace Fury.Characters.Motors {
             return false;
         }
 
-        /// <summary>
         /// Dampens a vector if it differs from facing when character jumped.
         /// This prevents characters from swaying in the air, which would be very obnoxious in a shooting game.
-        /// </summary>
-        /// <param name="v"></param>
         private void DampenAirMovement(ref Vector3 v, bool server) {
             //Not in the air.
             if(_isGrounded)
@@ -493,11 +370,7 @@ namespace Fury.Characters.Motors {
                     v.z * dampener);
         }
 
-        /// <summary>
         /// Returns a move rate after being modified by action codes.
-        /// </summary>
-        /// <param name="actionCodes"></param>
-        /// <returns></returns>
         private float GetMoveRate(ActionCodes actionCodes, Weapon weaponOverride = null) {
             float moveRate = _baseMoveRate;
             //Action code alterations.
@@ -515,9 +388,7 @@ namespace Fury.Characters.Motors {
             return moveRate;
         }
 
-        /// <summary>
         /// Moves using data.
-        /// </summary>
         [Replicate]
         private void Replicate(ReplicateData input, bool asServer, Channel channel = Channel.Unreliable, bool replaying = false) {
             //If not enabled. Can occur when player is out of health, possible a command go through after.
@@ -602,9 +473,7 @@ namespace Fury.Characters.Motors {
         }
 
 
-        /// <summary>
         /// Checks if running audio should play.
-        /// </summary>
         [Client(Logging = LoggingType.Off)]
         private void CheckPlayRunningAudio() {
             //Not running or cannot play running audio yet due to time restrictions.
@@ -619,9 +488,7 @@ namespace Fury.Characters.Motors {
                 OfflineGameplayDependencies.AudioManager.PlayAtPoint(_runningAudioPrefab, transform.position);
         }
 
-        /// <summary>
         /// Reconciles using data.
-        /// </summary>
         [Reconcile]
         private void Reconcile(ReconcileData rd, bool asServer, Channel channel = Channel.Unreliable) {
             //Server doesn't actually reconcile, it just sends the data to the client.
@@ -635,9 +502,7 @@ namespace Fury.Characters.Motors {
         }
 
 
-        /// <summary>
         /// Tries to jump using input.
-        /// </summary>
         [Client(Logging = LoggingType.Off)]
         private void CheckJump() {
             if(!Input.GetKeyDown(KeyCode.Space))
@@ -648,10 +513,7 @@ namespace Fury.Characters.Motors {
             _jump = true;
         }
 
-        /// <summary>
         /// Sets the running value and resets last run audio time when appropriate.
-        /// </summary>
-        /// <param name="value"></param>
         private void SetRunning(bool value, bool replaying) {
             if(value == _running)
                 return;
@@ -663,9 +525,7 @@ namespace Fury.Characters.Motors {
         }
 
 
-        /// <summary>
         /// Updates queued input on owning client.
-        /// </summary>
         [Client(Logging = LoggingType.Off)]
         private void CheckInput(out ReplicateData rd) {
             float hor = Input.GetAxisRaw("Horizontal");
@@ -704,18 +564,14 @@ namespace Fury.Characters.Motors {
                 );
         }
 
-        /// <summary>
         /// Update AnimatorController using input.
-        /// </summary>
         [Server(Logging = LoggingType.Off)]
         private void ServerUpdateAnimator(ReplicateData input) {
             _animatorController.SetMovementDirection(input.LocalDirection);
         }
 
 
-        /// <summary>
         /// Sent to all clients containing extra effects data after server has processed user input.
-        /// </summary>
         [ObserversRpc]
         private void ObserversSetRunning(bool running, Channel c = Channel.Unreliable) {
             //Do not update for owner.

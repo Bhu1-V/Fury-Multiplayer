@@ -1,10 +1,4 @@
-using Fury.Clients;
-using FishNet.Connection;
 using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class GamePlayManager : NetworkBehaviour {
     /// <summary>

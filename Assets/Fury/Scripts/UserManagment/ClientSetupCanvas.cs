@@ -1,6 +1,7 @@
 using FirstGearGames.Utilities.Objects;
 using FishNet.Managing;
 using FishNet.Transporting;
+using Fury.Weapons;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,12 +107,13 @@ public class ClientSetupCanvas : MonoBehaviour {
         _networkManager.ClientManager.StartConnection();
         _canvasGroup.SetActive(false, true);
     }
+
     private void Update() {
-        if(Application.isFocused && Input.GetKeyDown(KeyCode.T)) {
-            if(_clientState != LocalConnectionState.Stopped)
-                _networkManager.ClientManager.StopConnection();
-            else
-                _networkManager.ClientManager.StartConnection();
-        }
+        //if(Application.isFocused ) {
+        //    if(_clientState != LocalConnectionState.Stopped)
+        //        _networkManager.ClientManager.StopConnection();
+        //    else
+        //        _networkManager.ClientManager.StartConnection();
+        //}
     }
 }

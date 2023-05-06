@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5790637226601515578}
   - component: {fileID: 5790637226601515581}
   - component: {fileID: 1296304391626573449}
+  - component: {fileID: 8765790728748322453}
   m_Layer: 0
   m_Name: RedFlag
   m_TagString: Untagged
@@ -55,6 +56,7 @@ MonoBehaviour:
   isCaptured: 0
   FLAG_CAPTURE_SUCCESS: flag_Capture_Success
   FLAG_CAPTURE_START: flag_Capture_Start
+  miniMapVisiblehandler: {fileID: 0}
 --- !u!65 &5790637226601515579
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -142,7 +144,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 6
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 2220430749
   <SceneId>k__BackingField: 0
@@ -162,3 +164,21 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &8765790728748322453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5790637226601515583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e5f0ac4394b1d34e80781e2fafed895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MinimapLegendLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  legendType: 1
+  legendPrefab: {fileID: 2081052817486768274, guid: 89fe0d09049a2604e990f93dc75c134b, type: 3}
+  legendSpriteRenderer: {fileID: 0}
