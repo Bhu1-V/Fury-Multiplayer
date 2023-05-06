@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Fury.Managers.Gameplay.Canvases;
 
 public class SessionManager : NetworkBehaviour {
     public static SessionManager Instance;
@@ -59,6 +60,9 @@ public class SessionManager : NetworkBehaviour {
     [SerializeField]
     TextMeshProUGUI RedTeamScoreText;
 
+    [SerializeField]
+    bool isPaused;
+
     private void Awake() {
         if(Instance == null) {
             Instance = this;
@@ -74,6 +78,7 @@ public class SessionManager : NetworkBehaviour {
 
         redPlayers.OnChange += _Players_onChange;
         bluePlayers.OnChange += _Players_onChange;
+        _timeRemaining.OnChange += _timeRemaining_OnChange;
     }
 
     private void OnDestroy() {
@@ -83,6 +88,7 @@ public class SessionManager : NetworkBehaviour {
 
         redPlayers.OnChange -= _Players_onChange;
         bluePlayers.OnChange -= _Players_onChange;
+        _timeRemaining.OnChange -= _timeRemaining_OnChange;
     }
 
     public override void OnStartServer() {
@@ -263,6 +269,10 @@ public class SessionManager : NetworkBehaviour {
         return output;// Debug.Log(output);
     }
 
+    public SessionInformationCanvas GetSessionInformationCanvas() {
+        return sessionInformationCanvas;
+    }
+
     private void OnEnable() {
         Debug.Log($"Session Manager is Enabled");
         InstanceFinder.ClientManager.RegisterBroadcast<GameLogEntry>(OnGameLogEntry);
@@ -290,11 +300,27 @@ public class SessionManager : NetworkBehaviour {
         gameLogEntryText.text = $"{entry.logEntry}\n";
     }
 
+    public void SetPause(bool value) {
+        isPaused = value;
+    }
+
+    public bool GetPause() {
+        return isPaused;
+    }
+
     public void AddToQueue(GameObject objToAdd) {
         if(objectQueue.Count >= maxQueueSize) {
             Destroy(objectQueue.Dequeue());
         }
         objectQueue.Enqueue(objToAdd);
+    }
+
+    public int GetRedTeamScore() {
+        return redTeamScore;
+    }
+
+    public int GetBlueScore() {
+        return blueTeamScore;
     }
 
     public struct GameLogEntry : IBroadcast {
@@ -407,5 +433,53 @@ public class SessionManager : NetworkBehaviour {
                 sessionInformationCanvas.UpdateInfo(value);
                 break;
         }
+    }
+
+    private void _timeRemaining_OnChange(SyncTimerOperation op, float prev, float next, bool asServer) {
+        /* Like all SyncType callbacks, asServer is true if the callback
+         * is occuring on the server side, false if on the client side. */
+
+        //Operations can be used to be notified of changes to the timer.
+
+        //Timer has been started with initial values.
+        if(op == SyncTimerOperation.Start)
+            Debug.Log($"The timer was started with {next} seconds.");
+        //Timer has been paused.
+        else if(op == SyncTimerOperation.Pause)
+            Debug.Log($"The timer was paused.");
+        //Timer has been paused and latest server values were sent. 
+        else if(op == SyncTimerOperation.PauseUpdated)
+            Debug.Log($"The timer was paused and remaining time has been updated to {next} seconds.");
+        //Timer was unpaused.
+        else if(op == SyncTimerOperation.Unpause)
+            Debug.Log($"The timer was unpaused.");
+        //Timer has been manually stopped.
+        else if(op == SyncTimerOperation.Stop)
+            Debug.Log($"The timer has been stopped and is no longer running.");
+        /* Timer has been manually stopped.
+         * 
+         * When StopUpdated is called Previous will contain the remaining time
+         * prior to being stopped as it is locally. Next will contain the remaining
+         * time prior to being stopped as it was on the server. These values
+         * often align but the information is provided for your potential needs. 
+         *
+         * When the server starts a new timer while one is already active, and chooses
+         * to also send a stop update using the StartTimer(float,bool) option, a
+         * StopUpdated is also sent to know previous timer values before starting a new timer. */
+        else if(op == SyncTimerOperation.StopUpdated)
+            Debug.Log($"The timer has been stopped and is no longer running. The timer was stopped at value {next} before stopping, and the previous value was {prev}");
+        //A timer has reached 0f.
+        else if(op == SyncTimerOperation.Finished) {
+            Debug.Log($"The timer has completed!");
+            SessionEnd();
+        }
+        //Complete occurs after all change events are processed.
+        else if(op == SyncTimerOperation.Complete)
+            Debug.Log("All timer callbacks have completed for this tick.");
+    }
+
+    public void SessionEnd() {
+        sessionInformationCanvas.SetSessionCanvasState(SessionInformationCanvas.SessionInfoCanvasState.SessionEnd);
+        GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.SessionEnd);
     }
 }

@@ -809,13 +809,13 @@ namespace Fury.Characters.Weapons {
             //Semi automatic.
             if(!Weapon.Automatic) {
                 //Mouse fire not pressed.
-                if(!Input.GetKeyDown(KeyCode.Mouse0))
+                if(!Input.GetKeyDown(KeyCode.Mouse0) || SessionManager.Instance.GetPause())
                     return;
             }
             //Automatic.
             else {
                 //Mouse fire not pressed.
-                if(!Input.GetKey(KeyCode.Mouse0))
+                if(!Input.GetKey(KeyCode.Mouse0) || SessionManager.Instance.GetPause())
                     return;
             }
 
@@ -1116,7 +1116,7 @@ namespace Fury.Characters.Weapons {
         /// </summary>
         [Client(Logging = LoggingType.Off)]
         private void CheckQueueReloadWeapon() {
-            if(Input.GetKeyDown(KeyCode.R))
+            if(Input.GetKeyDown(KeyCode.R) && !SessionManager.Instance.GetPause())
                 _reloadQueued = true;
         }
 
@@ -1139,19 +1139,19 @@ namespace Fury.Characters.Weapons {
 
             //Numeric keys.
             int numericIndex = -1;
-            if(Input.GetKeyDown(KeyCode.Alpha1))
+            if(Input.GetKeyDown(KeyCode.Alpha1) && !SessionManager.Instance.GetPause())
                 numericIndex = 1;
-            if(Input.GetKeyDown(KeyCode.Alpha2))
+            if(Input.GetKeyDown(KeyCode.Alpha2) && !SessionManager.Instance.GetPause())
                 numericIndex = 2;
-            if(Input.GetKeyDown(KeyCode.Alpha3))
+            if(Input.GetKeyDown(KeyCode.Alpha3) && !SessionManager.Instance.GetPause())
                 numericIndex = 3;
-            if(Input.GetKeyDown(KeyCode.Alpha4))
+            if(Input.GetKeyDown(KeyCode.Alpha4) && !SessionManager.Instance.GetPause())
                 numericIndex = 4;
 
             float wheelValue = 0f;
             //Only get wheel value if no numeric input.
             if(numericIndex == -1)
-                wheelValue = Input.GetAxisRaw("Mouse ScrollWheel");
+                wheelValue = SessionManager.Instance.GetPause() ? 0 : Input.GetAxisRaw("Mouse ScrollWheel");
 
             //No input.
             if(wheelValue == 0f && numericIndex == -1)

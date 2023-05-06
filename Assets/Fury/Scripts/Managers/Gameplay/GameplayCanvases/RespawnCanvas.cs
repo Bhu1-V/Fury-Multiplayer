@@ -67,14 +67,16 @@ namespace Fury.Managers.Gameplay.Canvases {
         /// </summary>
         private void Health_OnRespawned() {
             SetCursorVisibility(false);
-            _canvasGroup.SetActive(false, true);
+            GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.Playing);
+            //_canvasGroup.SetActive(false, true);
         }
 
         /// <summary>
         /// Received when the character is dead.
         /// </summary>
         private void Health_OnDeath() {
-            _canvasGroup.SetActive(true, true);
+            //_canvasGroup.SetActive(true, true);
+            GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.Death);
             SetCursorVisibility(true);
         }
 

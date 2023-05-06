@@ -102,7 +102,7 @@ public class Flag : NetworkBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        Debug.Log($"Collision Triggered = {System.Convert.ToString(other.gameObject.layer, 2)}");
+        //Debug.Log($"Collision Triggered = {System.Convert.ToString(other.gameObject.layer, 2)}");
         if(IsServer) {
             UserData userData = other.GetComponent<UserData>();
             if(userData) {

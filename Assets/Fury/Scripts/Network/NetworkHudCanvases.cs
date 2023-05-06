@@ -233,8 +233,8 @@ public class NetworkHudCanvases : MonoBehaviour {
     }
 
     private void Update() {
-        if(Application.isFocused && Input.GetKeyDown(KeyCode.T)) {
-            OnClick_Client();
-        }
+        //if(Application.isFocused && Input.GetKeyDown(KeyCode.T)) {
+        //    OnClick_Client();
+        //}
     }
 }

@@ -1,14 +1,25 @@
 using FirstGearGames.Utilities.Objects;
+using Fury.Managers.Gameplay.Canvases;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SessionInformationCanvas : MonoBehaviour {
     /// <summary>
     /// CanvasGroup on this object.
     /// </summary>
     private CanvasGroup _canvasGroup;
+
+    public enum SessionInfoCanvasState {
+        Playing,
+        SessionEnd,
+    }
+
+    [SerializeField]
+    private SessionInfoCanvasState sessionState;
 
     private bool isVisible;
 
@@ -21,15 +32,27 @@ public class SessionInformationCanvas : MonoBehaviour {
     [SerializeField]
     private Transform blueInfoParent;
 
+    [SerializeField]
+    private TextMeshProUGUI teamWonText;
+
+    [SerializeField]
+    private Transform teamWonTransform;
+
+    [SerializeField]
+    private Button playAgainButton;
+
     private Dictionary<string, PlayerInfoEntry> sessionInfo = new();
 
     private void Awake() {
         _canvasGroup = GetComponent<CanvasGroup>();
         _canvasGroup.SetActive(false, true);
+        SetSessionCanvasState(SessionInfoCanvasState.Playing);
     }
 
     private void Update() {
-        if(Input.GetKeyDown(KeyCode.Tab)) {
+        if(Input.GetKeyDown(KeyCode.Tab) &&
+          (GameplayCanvases.Instance.GetGameState() == GameplayCanvases.GamePlayStates.Playing ||
+           GameplayCanvases.Instance.GetGameState() == GameplayCanvases.GamePlayStates.TabPressed)) {
             ToggleCanvas();
         }
     }
@@ -51,7 +74,13 @@ public class SessionInformationCanvas : MonoBehaviour {
     }
 
     private void ToggleCanvas() {
+        Debug.Log($"Toggling Canvas");
         isVisible = !isVisible;
+        if(isVisible) {
+            GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.TabPressed);
+        } else {
+            GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.Playing);
+        }
         SetCursorVisibility(isVisible);
         _canvasGroup.SetActive(isVisible, true);
     }
@@ -96,5 +125,30 @@ public class SessionInformationCanvas : MonoBehaviour {
         if(userData && sessionInfo.ContainsKey(userData.userName)) {
             sessionInfo[userData.userName].SetXp(userData.score);
         }
+    }
+
+    public void SetSessionCanvasState(SessionInfoCanvasState state) {
+        sessionState = state;
+        switch(state) {
+            case SessionInfoCanvasState.Playing: {
+                    SetCanvasPlaying();
+                    break;
+                }
+            case SessionInfoCanvasState.SessionEnd: {
+                    SetCanvasSessionEnd();
+                    break;
+                }
+        }
+    }
+
+    private void SetCanvasSessionEnd() {
+        SetCursorVisibility(true);
+        playAgainButton.gameObject.SetActive(true);
+        teamWonTransform.gameObject.SetActive(true);
+    }
+
+    private void SetCanvasPlaying() {
+        playAgainButton.gameObject.SetActive(false);
+        teamWonTransform.gameObject.SetActive(false);
     }
 }

@@ -47,7 +47,6 @@ namespace Fury.Characters.Vitals {
             OnHit?.Invoke(this, damage);
             GlobalOnHitEvent?.Invoke(this, (int)Multiplier * damage);
         }
-
     }
 
 

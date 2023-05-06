@@ -505,7 +505,7 @@ namespace Fury.Characters.Motors {
         /// Tries to jump using input.
         [Client(Logging = LoggingType.Off)]
         private void CheckJump() {
-            if(!Input.GetKeyDown(KeyCode.Space))
+            if(!Input.GetKeyDown(KeyCode.Space) || SessionManager.Instance.GetPause())
                 return;
             if(!CanJump())
                 return;
@@ -528,8 +528,12 @@ namespace Fury.Characters.Motors {
         /// Updates queued input on owning client.
         [Client(Logging = LoggingType.Off)]
         private void CheckInput(out ReplicateData rd) {
-            float hor = Input.GetAxisRaw("Horizontal");
-            float ver = Input.GetAxisRaw("Vertical");
+            float hor = 0;
+            float ver = 0;
+            if(!SessionManager.Instance.GetPause()) {
+                hor = Input.GetAxisRaw("Horizontal");
+                ver = Input.GetAxisRaw("Vertical");
+            }
 
             Vector3 localDirection = new Vector3(hor, 0f, ver);
             Vector3 worldDirection = transform.TransformDirection(localDirection.normalized);

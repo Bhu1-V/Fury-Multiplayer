@@ -1,6 +1,7 @@
 using FirstGearGames.Utilities.Objects;
 using FishNet.Managing;
 using FishNet.Transporting;
+using Fury.Managers.Gameplay.Canvases;
 using Fury.Weapons;
 using System;
 using System.Collections;
@@ -105,7 +106,7 @@ public class ClientSetupCanvas : MonoBehaviour {
 
         // Start Client
         _networkManager.ClientManager.StartConnection();
-        _canvasGroup.SetActive(false, true);
+        GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.Playing);
     }
 
     private void Update() {

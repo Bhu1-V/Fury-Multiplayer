@@ -35,6 +35,15 @@ public class PlayerInfoEntry : MonoBehaviour {
         xpText.text = xp.ToString();
     }
 
+    private void Update() {
+        RectTransform thisRect = GetComponent<RectTransform>();
+        RectTransform parentRect = transform.parent.parent.GetComponent<RectTransform>();
+
+        if(thisRect != null && parentRect != null) {
+            thisRect.sizeDelta = new Vector2(thisRect.sizeDelta.x, parentRect.sizeDelta.y / 5f);
+        }
+    }
+
     public void SetUserName(string userName) {
         userNameText.text = userName;
     }

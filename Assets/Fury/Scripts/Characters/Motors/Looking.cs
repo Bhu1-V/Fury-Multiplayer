@@ -184,14 +184,15 @@ namespace Fury.Characters.Motors {
         /// </summary>
         [Client(Logging = LoggingType.Off)]
         private void UpdateLooking() {
+
             LookPosition = transform.position + _cameraOffset;
 
             //If has health then look normally.
             if(_health.CurrentHealth > 0) {
                 //Yaw.
-                transform.Rotate(new Vector3(0f, Input.GetAxis("Mouse X"), 0f) * _yawRate);
+                transform.Rotate(SessionManager.Instance.GetPause() ? Vector3.zero : new Vector3(0f, Input.GetAxis("Mouse X"), 0f) * _yawRate);
                 //Pitch.
-                float pitch = _lookDirection.x + (Input.GetAxis("Mouse Y") * _pitchRate);
+                float pitch = _lookDirection.x + ((SessionManager.Instance.GetPause() ? 0 : Input.GetAxis("Mouse Y")) * _pitchRate);
                 /* If not signed on X then make it
                  * signed for easy clamping. */
                 if(pitch > 180f)
