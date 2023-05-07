@@ -57,6 +57,11 @@ namespace Fury.Clients {
             SpawnedCharacterData.Health = go.GetComponent<Health>();
         }
 
+        public void SoftDespawn() {
+            SpawnedCharacterData.NetworkObject.GetComponent<UserData>().IsCarringEnemyFlag = false;
+            SpawnedCharacterData.NetworkObject.gameObject.SetActive(false);
+        }
+
         /// <summary>
         /// Request a respawn from the server.
         /// </summary>
@@ -64,12 +69,13 @@ namespace Fury.Clients {
         private void CmdRespawn() {
             Debug.Log("Executing Cmd Respawn Server RPC");
             SessionManager.Instance.PredictNextSpawnTeam(out UserData.Team nextSpawnTeam);
-            Transform spawn = OfflineGameplayDependencies.SpawnManager.ReturnSpawnPoint(nextSpawnTeam);
+            Transform spawn = OfflineGameplayDependencies.SpawnManager.ReturnSpawnPoint(UserData.Team.None);
             if(spawn == null) {
                 Debug.LogError("All spawns are occupied.");
             } else {
                 //If the character is not spawned yet.
                 if(SpawnedCharacterData.NetworkObject == null) {
+                    spawn = OfflineGameplayDependencies.SpawnManager.ReturnSpawnPoint(nextSpawnTeam);
                     GameObject r = Instantiate(_characterPrefab, spawn.position, Quaternion.Euler(0f, spawn.eulerAngles.y, 0f));
                     r.name = $"Character {Helper.GenerateRandomString(10)}";
                     base.Spawn(r, base.Owner);
@@ -79,6 +85,9 @@ namespace Fury.Clients {
                 }
                 //Character is already spawned.
                 else {
+                    spawn = OfflineGameplayDependencies.SpawnManager.ReturnSpawnPoint(SpawnedCharacterData.NetworkObject.gameObject.GetComponent<UserData>().team);
+                    SpawnedCharacterData.NetworkObject.gameObject.SetActive(true);
+                    EnableCharacter();
                     SpawnedCharacterData.NetworkObject.transform.position = spawn.position;
                     SpawnedCharacterData.NetworkObject.transform.rotation = Quaternion.Euler(0f, spawn.eulerAngles.y, 0f);
                     Physics.SyncTransforms();
@@ -88,6 +97,11 @@ namespace Fury.Clients {
                 }
 
             }
+        }
+
+        [ObserversRpc]
+        private void EnableCharacter() {
+            SpawnedCharacterData.NetworkObject.gameObject.SetActive(true);
         }
 
         /// <summary>

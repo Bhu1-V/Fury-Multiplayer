@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: -658806792715337821}
   m_Layer: 29
   m_Name: MainCharacter
-  m_TagString: Untagged
+  m_TagString: player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -255,7 +255,6 @@ MonoBehaviour:
   _maximumAirDampening: 0.75
   _landingAudioPrefab: {fileID: 7271271861184822428, guid: 9c9a2d76f669e67408ded4b91ce5fa4f, type: 3}
   _runningAudioPrefab: {fileID: 1673684251539739115, guid: f66e90eb2a534194d94bd9bd0ac54b1d, type: 3}
-  _jump: 0
 --- !u!114 &6370243928297569462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,6 +492,7 @@ MonoBehaviour:
   redMaterial: {fileID: -5283888208800200948, guid: ba1bc19bafc770a4f8b5fadaeb3a9e66, type: 3}
   blueMaterial: {fileID: 2100000, guid: 496935fcb9c527041a379ee33aa166ae, type: 2}
   miniMapLengendHandler: {fileID: -658806792715337821}
+  miniMapCamera: {fileID: 0}
   <IsCarringEnemyFlag>k__BackingField: 0
 --- !u!114 &-658806792715337821
 MonoBehaviour:

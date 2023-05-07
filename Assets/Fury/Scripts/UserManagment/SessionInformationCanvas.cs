@@ -49,9 +49,18 @@ public class SessionInformationCanvas : MonoBehaviour {
         SetSessionCanvasState(SessionInfoCanvasState.Playing);
     }
 
+    private void OnEnable() {
+        playAgainButton.onClick.AddListener(SessionManager.Instance.OnClickPlayAgain);
+    }
+
+    private void OnDisable() {
+        playAgainButton.onClick.RemoveAllListeners();
+    }
+
     private void Update() {
         if(Input.GetKeyDown(KeyCode.Tab) &&
           (GameplayCanvases.Instance.GetGameState() == GameplayCanvases.GamePlayStates.Playing ||
+           GameplayCanvases.Instance.GetGameState() == GameplayCanvases.GamePlayStates.Death ||
            GameplayCanvases.Instance.GetGameState() == GameplayCanvases.GamePlayStates.TabPressed)) {
             ToggleCanvas();
         }
@@ -150,5 +159,24 @@ public class SessionInformationCanvas : MonoBehaviour {
     private void SetCanvasPlaying() {
         playAgainButton.gameObject.SetActive(false);
         teamWonTransform.gameObject.SetActive(false);
+    }
+
+    public void ResetLog() {
+        sessionInfo.Clear();
+        new List<PlayerInfoEntry>(blueInfoParent.GetComponentsInChildren<PlayerInfoEntry>()).ForEach(x => Destroy(x.gameObject));
+        new List<PlayerInfoEntry>(redInfoParent.GetComponentsInChildren<PlayerInfoEntry>()).ForEach(x => Destroy(x.gameObject));
+    }
+
+    public void SetWinText(int status) {
+        //
+        // Status -1 => Red
+        // Status 0  => Draw
+        // Status 1  => Blue
+        //
+        if(status == 0) {
+            teamWonText.text = "DRAW";
+        } else {
+            teamWonText.text = $"Team {((status < 0) ? ("Red") : ("Blue"))} Won";
+        }
     }
 }

@@ -47,9 +47,9 @@ public class Flag : NetworkBehaviour {
     }
 
     private void OnDisable() {
-        InstanceFinder.ClientManager.UnregisterBroadcast<FlagCaptureData>(OnFlagCaptureDataReceived);
-        InstanceFinder.ClientManager.UnregisterBroadcast<FlagDropData>(OnFlagDropDataReceived);
-        InstanceFinder.ServerManager.UnregisterBroadcast<FlagDropData>(OnClientDropDataReceive);
+        InstanceFinder.ClientManager?.UnregisterBroadcast<FlagCaptureData>(OnFlagCaptureDataReceived);
+        InstanceFinder.ClientManager?.UnregisterBroadcast<FlagDropData>(OnFlagDropDataReceived);
+        InstanceFinder.ServerManager?.UnregisterBroadcast<FlagDropData>(OnClientDropDataReceive);
     }
 
     public struct FlagDropData : IBroadcast {

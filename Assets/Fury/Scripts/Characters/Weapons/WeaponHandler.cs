@@ -439,8 +439,10 @@ namespace Fury.Characters.Weapons {
         private void AddDefaultWeaponsToInventory() {
             //Simulates picking up weapons.
             for(int i = 0; i < Weapons.Length; i++) {
-                if(startingWeapons.Contains(Weapons[i].WeaponName))
+                Weapons[i].ResetWeapon();
+                if(startingWeapons.Contains(Weapons[i].WeaponName)) {
                     AddWeaponToInventory(i);
+                }
             }
         }
 

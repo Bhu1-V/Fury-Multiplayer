@@ -12,6 +12,7 @@ using FishNet.Serializing.Helping;
 using FishNet.Transporting;
 using System.Linq;
 using UnityEngine;
+using Fury.Managers.Gameplay.Canvases;
 
 namespace Fury.Characters.Motors {
 
@@ -462,8 +463,10 @@ namespace Fury.Characters.Motors {
             //Add on vertical velocity and external forces.
             v.y += _verticalVelocity;
             v += _externalForces;
+
             //Apply movement to the character controller.
-            _controller.Move(v * deltaTime);
+            if(_controller.gameObject.activeInHierarchy)
+                _controller.Move(v * deltaTime);
 
             //Update running which will send in another method.
             bool running = (_isGrounded && input.LocalDirection != Vector3.zero && !input.ActionCodes.Contains(ActionCodes.Walking));

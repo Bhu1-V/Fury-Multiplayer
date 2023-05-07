@@ -31,6 +31,11 @@ namespace Fury.Managers.Gameplay.Canvases {
             _canvasGroup.SetActive(false, true);
         }
 
+        private void OnDestroy() {
+            ClientInstanceAnnouncer.OnPlayerUpdated -= ClientInstanceAnnouncer_OnUpdated;
+            PlayerSpawner.OnCharacterUpdated -= PlayerSpawner_OnCharacterUpdated;
+        }
+
         private void Update() {
             //Show cursor if not connected.
             if(InstanceFinder.IsOffline)

@@ -26761,7 +26761,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
+  m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -27374,7 +27374,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1103021404}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1991913386}
+        m_TargetAssemblyTypeName: SessionManager, Assembly-CSharp
+        m_MethodName: OnClickPlayAgain
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1103021404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47856,8 +47868,8 @@ MonoBehaviour:
   sessionID: 0
   redTeamScore: 0
   blueTeamScore: 0
-  sessionMinutes: 5
-  warmUpTimeSeconds: 15
+  sessionMinutes: 0
+  warmUpTimeSeconds: 30
   sessionTimerText: {fileID: 1603147499}
   teamRedPlayersText: {fileID: 1574016434}
   teamBluePlayersText: {fileID: 1121094565}
@@ -47867,6 +47879,8 @@ MonoBehaviour:
   BlueTeamScoreText: {fileID: 251335147}
   RedTeamScoreText: {fileID: 1567581159}
   isPaused: 0
+  redFlag: {fileID: 5790637227273276656}
+  blueFlag: {fileID: 8757973200155763643}
   maxQueueSize: 15
 --- !u!4 &1991913387
 Transform:
@@ -51895,6 +51909,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5790637227273276656 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5790637226601515576, guid: 9f5be215bbb871a4aa5aca2f2f239c5c, type: 3}
+  m_PrefabInstance: {fileID: 5790637227273276654}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab0ff88c7074244cad5b14622a04312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &6745855428602504470
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52389,6 +52414,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8757973200155763643 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8757973199650689690, guid: 47bac7a4c19ddd041be780d110080d69, type: 3}
+  m_PrefabInstance: {fileID: 8757973200155763637}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab0ff88c7074244cad5b14622a04312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &9139860295906754078

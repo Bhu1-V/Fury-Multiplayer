@@ -386,6 +386,8 @@ namespace Fury.Weapons {
         /// </summary>
         /// <returns></returns>
         public virtual float ReturnMeleeRadius() { return 0.5f; }
+
+        public virtual void ResetWeapon() { }
     }
 
 }

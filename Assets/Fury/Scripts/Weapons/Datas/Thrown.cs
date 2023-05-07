@@ -93,6 +93,10 @@ namespace Fury.Weapons {
                 StopGraphicUpdate();
         }
 
+        public override void ResetWeapon() {
+            Reset();
+        }
+
         /// <summary>
         /// Called when this weapon fires.
         /// </summary>

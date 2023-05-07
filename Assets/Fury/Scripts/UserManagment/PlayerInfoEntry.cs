@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -51,5 +52,9 @@ public class PlayerInfoEntry : MonoBehaviour {
     public void SetXp(uint xp) {
         Debug.Log($"setting {userNameText.text} score to {xp}");
         xpText.text = xp.ToString();
+    }
+
+    public void Reset() {
+        xpText.text = "0";
     }
 }

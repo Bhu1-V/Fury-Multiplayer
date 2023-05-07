@@ -9,6 +9,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Fury.Managers.Gameplay.Canvases;
+using Fury.Network;
+using Fury.Clients;
+using UnityEngine.EventSystems;
 
 public class SessionManager : NetworkBehaviour {
     public static SessionManager Instance;
@@ -63,6 +66,13 @@ public class SessionManager : NetworkBehaviour {
     [SerializeField]
     bool isPaused;
 
+    [SerializeField]
+    Flag redFlag;
+
+    [SerializeField]
+    Flag blueFlag;
+
+
     private void Awake() {
         if(Instance == null) {
             Instance = this;
@@ -79,6 +89,7 @@ public class SessionManager : NetworkBehaviour {
         redPlayers.OnChange += _Players_onChange;
         bluePlayers.OnChange += _Players_onChange;
         _timeRemaining.OnChange += _timeRemaining_OnChange;
+        ClientInstanceAnnouncer.OnPlayerUpdated += ClientInstanceAnnouncer_OnUpdated;
     }
 
     private void OnDestroy() {
@@ -89,6 +100,7 @@ public class SessionManager : NetworkBehaviour {
         redPlayers.OnChange -= _Players_onChange;
         bluePlayers.OnChange -= _Players_onChange;
         _timeRemaining.OnChange -= _timeRemaining_OnChange;
+        ClientInstanceAnnouncer.OnPlayerUpdated -= ClientInstanceAnnouncer_OnUpdated;
     }
 
     public override void OnStartServer() {
@@ -108,6 +120,10 @@ public class SessionManager : NetworkBehaviour {
         _timeRemaining.StopTimer();
     }
 
+    public override void OnStartClient() {
+        base.OnStartClient();
+    }
+
     public override void OnStopClient() {
         base.OnStopClient();
         Debug.Log($"Session Manager Stopped Client");
@@ -122,12 +138,78 @@ public class SessionManager : NetworkBehaviour {
     }
 
     private void LateUpdate() {
-        if(!_timeRemaining.Paused) {
+        if(!_timeRemaining.Paused && (!GetPause() || GameplayCanvases.Instance.GetGameState() == GameplayCanvases.GamePlayStates.TabPressed)) {
             sessionTimerText.text = TimeSpan.FromSeconds(_timeRemaining.Remaining).ToString(@"mm\:ss");
 
             teamRedPlayersText.text = GetDictonaryData(redPlayers).Trim(' ');
             teamBluePlayersText.text = GetDictonaryData(bluePlayers).Trim(' ');
         }
+    }
+
+    public void ResetTeamScore() {
+        Debug.Log($"Resetting TeamScore");
+        blueTeamScore = 0;
+        redTeamScore = 0;
+    }
+
+    public void ResetTimer() {
+        Debug.Log($"Resetting Timer");
+        _timeRemaining.StartTimer((sessionMinutes * 60f) + warmUpTimeSeconds);
+    }
+
+    [Server]
+    public void ServerRestartSession() {
+        Debug.Log($"Called ServerRestartSession sever = {IsServer} and owner = {IsOwner}");
+        ResetTeamScore();
+        ResetTimer();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RestartSessionServerRPC() {
+        ServerRestartSession();
+    }
+
+    private void ClientInstanceAnnouncer_OnUpdated(NetworkObject obj) {
+        Debug.Log($"Called ServerRestartSession sever = {IsServer} and owner = {IsOwner}");
+        if(obj != null) {
+            ClientInstance ci = obj.GetComponent<ClientInstance>();
+            _playerSpawner = ci.PlayerSpawner;
+        }
+    }
+
+    public void OnClick_Respawn() {
+        _playerSpawner.TryRespawn();
+#if !ENABLE_INPUT_SYSTEM
+        /* Deselect any canvas because when the respawn canvas
+         * disappears it sometimes defaults to the server / client
+         * button. In result, the next time the player pressed space
+         * they become disconnected. */
+        EventSystem eventSystem = FindObjectOfType<EventSystem>();
+        eventSystem?.SetSelectedGameObject(null);
+#endif
+    }
+
+    public void ClientRestartSession() {
+        Debug.Log($"Called Client RestartSession sever = {IsServer} and owner = {IsOwner} whoOwner = {Owner} thisID = {OwnerId}");
+        if(IsServer) {
+            if(_timeRemaining.Remaining == 0f) {
+                ServerRestartSession();
+            }
+            sessionInformationCanvas.ResetLog();
+            OnClick_Respawn();
+            return;
+        }
+
+        if(_timeRemaining.Remaining == 0f) {
+            RestartSessionServerRPC();
+        }
+        sessionInformationCanvas.ResetLog();
+        OnClick_Respawn();
+    }
+
+    public void OnClickPlayAgain() {
+        ClientRestartSession();
+        GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.Playing);
     }
 
     [Server]
@@ -343,6 +425,7 @@ public class SessionManager : NetworkBehaviour {
 
     UserData _capturedUserData;
     UserData.Team _capturedFlagTeam;
+    private PlayerSpawner _playerSpawner;
 
     public void OnFlagCaptured(UserData userData) {
         if(!IsServer) return;
@@ -478,7 +561,23 @@ public class SessionManager : NetworkBehaviour {
             Debug.Log("All timer callbacks have completed for this tick.");
     }
 
+    public void DisablePlayers() {
+        Array.ForEach<GameObject>(GameObject.FindGameObjectsWithTag("player"), (x) => {
+            Debug.Log($"Disabling {x}");
+            x.SetActive(false);
+        });
+    }
+
     public void SessionEnd() {
+        //_playerSpawner.SoftDespawn();
+        DisablePlayers();
+        redFlag.FlagDrop();
+        blueFlag.FlagDrop();
+        if(redTeamScore == blueTeamScore) {
+            sessionInformationCanvas.SetWinText(0);
+        } else {
+            sessionInformationCanvas.SetWinText(redTeamScore > blueTeamScore ? -1 : 1);
+        }
         sessionInformationCanvas.SetSessionCanvasState(SessionInformationCanvas.SessionInfoCanvasState.SessionEnd);
         GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.SessionEnd);
     }

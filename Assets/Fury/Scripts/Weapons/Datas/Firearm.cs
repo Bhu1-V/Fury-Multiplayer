@@ -295,6 +295,10 @@ namespace Fury.Weapons {
                 StopReload();
         }
 
+        public override void ResetWeapon() {
+            Reset();
+        }
+
 
         /// <summary>
         /// Removes weapon from inventory.
