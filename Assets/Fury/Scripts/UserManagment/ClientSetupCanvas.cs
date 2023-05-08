@@ -42,6 +42,20 @@ public class ClientSetupCanvas : MonoBehaviour {
         _canvasGroup.SetActive(true, true);
     }
 
+    private static bool GetArg(string name) {
+        var args = System.Environment.GetCommandLineArgs();
+        string s = ($"SERRRR: Found Arguments = \n");
+        for(int i = 0; i < args.Length; i++) {
+            s += $"{args[i]}, ";
+            if(args[i] == name) {
+                Debug.Log(s);
+                return true;
+            }
+        }
+        Debug.Log(s);
+        return false;
+    }
+
     private void Start() {
         Application.targetFrameRate = 30;
 
@@ -54,7 +68,15 @@ public class ClientSetupCanvas : MonoBehaviour {
             _networkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
         }
 
+        if(GetArg("IsServer")) {
+            _networkManager.ServerManager.StartConnection();
+            GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.Playing);
+        }
         playButton.onClick.AddListener(OnClick_Play);
+    }
+
+    private void OnDestroy() {
+        playButton.onClick.RemoveAllListeners();
     }
 
     public void OnUpdateInputField(string text) {
@@ -69,15 +91,15 @@ public class ClientSetupCanvas : MonoBehaviour {
         Debug.Log($"Client Obj connect State = {obj.ConnectionState}");
         _clientState = obj.ConnectionState;
 
-        if(_clientState == LocalConnectionState.Stopped) {
-            Debug.Log($"Is Server Started {_networkManager.ServerManager.AnyServerStarted()}");
+        //if(_clientState == LocalConnectionState.Stopped) {
+        //    Debug.Log($"Is Server Started {_networkManager.ServerManager.AnyServerStarted()}");
 
-            if(!_networkManager.ServerManager.AnyServerStarted()) {
-                _networkManager.ServerManager.StartConnection();
-                _networkManager.ClientManager.StartConnection();
-                _canvasGroup.SetActive(false, true);
-            }
-        }
+        //    if(!_networkManager.ServerManager.AnyServerStarted()) {
+        //        _networkManager.ServerManager.StartConnection();
+        //        //_networkManager.ClientManager.StartConnection();
+        //        _canvasGroup.SetActive(false, true);
+        //    }
+        //}
     }
 
     private void ServerManager_OnServerConnectionState(ServerConnectionStateArgs obj) {
@@ -92,17 +114,17 @@ public class ClientSetupCanvas : MonoBehaviour {
         string userName = userNameInputField.text;
         PlayerPrefs.SetString("user_name", userName);
 
-        bool shouldStartAsServer = isServerToggle.isOn;
+        //bool shouldStartAsServer = isServerToggle.isOn;
 
-        try {
-            if(shouldStartAsServer) {
-                _networkManager.ServerManager.StartConnection();
-            }
-        } catch(Exception e) {
-            // If there is already a server running.
-            Debug.LogWarning("FURY-LOG: Can't Start as Server, starting as a Client");
-            Debug.LogError(e);
-        }
+        //try {
+        //    if(shouldStartAsServer) {
+        //        _networkManager.ServerManager.StartConnection();
+        //    }
+        //} catch(Exception e) {
+        //    // If there is already a server running.
+        //    Debug.LogWarning("FURY-LOG: Can't Start as Server, starting as a Client");
+        //    Debug.LogError(e);
+        //}
 
         // Start Client
         _networkManager.ClientManager.StartConnection();

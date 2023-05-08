@@ -7,14 +7,11 @@ using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace FishNet.Transporting.Tugboat
-{
+namespace FishNet.Transporting.Tugboat {
     [DisallowMultipleComponent]
     [AddComponentMenu("FishNet/Transport/Tugboat")]
-    public class Tugboat : Transport
-    {
-        ~Tugboat()
-        {
+    public class Tugboat : Transport {
+        ~Tugboat() {
             Shutdown();
         }
 
@@ -51,9 +48,9 @@ namespace FishNet.Transporting.Tugboat
         /// Maximum number of players which may be connected at once.
         /// </summary>
         [Tooltip("Maximum number of players which may be connected at once.")]
-        [Range(1, 9999)]
+        [Range(1, 50)]
         [SerializeField]
-        private int _maximumClients = 4095;
+        private int _maximumClients = 10;
 
 
         [Header("Client")]
@@ -102,13 +99,11 @@ namespace FishNet.Transporting.Tugboat
         #endregion
 
         #region Initialization and unity.
-        public override void Initialize(NetworkManager networkManager, int transportIndex)
-        {
+        public override void Initialize(NetworkManager networkManager, int transportIndex) {
             base.Initialize(networkManager, transportIndex);
         }
 
-        protected void OnDestroy()
-        {
+        protected void OnDestroy() {
             Shutdown();
         }
         #endregion
@@ -119,8 +114,7 @@ namespace FishNet.Transporting.Tugboat
         /// </summary>
         /// <param name="connectionId"></param>
         /// <returns></returns>
-        public override string GetConnectionAddress(int connectionId)
-        {
+        public override string GetConnectionAddress(int connectionId) {
             return _server.GetConnectionAddress(connectionId);
         }
         /// <summary>
@@ -139,9 +133,8 @@ namespace FishNet.Transporting.Tugboat
         /// Gets the current local ConnectionState.
         /// </summary>
         /// <param name="server">True if getting ConnectionState for the server.</param>
-        public override LocalConnectionState GetConnectionState(bool server)
-        {
-            if (server)
+        public override LocalConnectionState GetConnectionState(bool server) {
+            if(server)
                 return _server.GetConnectionState();
             else
                 return _client.GetConnectionState();
@@ -150,24 +143,21 @@ namespace FishNet.Transporting.Tugboat
         /// Gets the current ConnectionState of a remote client on the server.
         /// </summary>
         /// <param name="connectionId">ConnectionId to get ConnectionState for.</param>
-        public override RemoteConnectionState GetConnectionState(int connectionId)
-        {
+        public override RemoteConnectionState GetConnectionState(int connectionId) {
             return _server.GetConnectionState(connectionId);
         }
         /// <summary>
         /// Handles a ConnectionStateArgs for the local client.
         /// </summary>
         /// <param name="connectionStateArgs"></param>
-        public override void HandleClientConnectionState(ClientConnectionStateArgs connectionStateArgs)
-        {
+        public override void HandleClientConnectionState(ClientConnectionStateArgs connectionStateArgs) {
             OnClientConnectionState?.Invoke(connectionStateArgs);
         }
         /// <summary>
         /// Handles a ConnectionStateArgs for the local server.
         /// </summary>
         /// <param name="connectionStateArgs"></param>
-        public override void HandleServerConnectionState(ServerConnectionStateArgs connectionStateArgs)
-        {
+        public override void HandleServerConnectionState(ServerConnectionStateArgs connectionStateArgs) {
             OnServerConnectionState?.Invoke(connectionStateArgs);
             UpdateTimeout();
         }
@@ -175,8 +165,7 @@ namespace FishNet.Transporting.Tugboat
         /// Handles a ConnectionStateArgs for a remote client.
         /// </summary>
         /// <param name="connectionStateArgs"></param>
-        public override void HandleRemoteConnectionState(RemoteConnectionStateArgs connectionStateArgs)
-        {
+        public override void HandleRemoteConnectionState(RemoteConnectionStateArgs connectionStateArgs) {
             OnRemoteConnectionState?.Invoke(connectionStateArgs);
         }
         #endregion
@@ -186,9 +175,8 @@ namespace FishNet.Transporting.Tugboat
         /// Processes data received by the socket.
         /// </summary>
         /// <param name="server">True to process data received on the server.</param>
-        public override void IterateIncoming(bool server)
-        {
-            if (server)
+        public override void IterateIncoming(bool server) {
+            if(server)
                 _server.IterateIncoming();
             else
                 _client.IterateIncoming();
@@ -198,9 +186,8 @@ namespace FishNet.Transporting.Tugboat
         /// Processes data to be sent by the socket.
         /// </summary>
         /// <param name="server">True to process data received on the server.</param>
-        public override void IterateOutgoing(bool server)
-        {
-            if (server)
+        public override void IterateOutgoing(bool server) {
+            if(server)
                 _server.IterateOutgoing();
             else
                 _client.IterateOutgoing();
@@ -216,8 +203,7 @@ namespace FishNet.Transporting.Tugboat
         /// Handles a ClientReceivedDataArgs.
         /// </summary>
         /// <param name="receivedDataArgs"></param>
-        public override void HandleClientReceivedDataArgs(ClientReceivedDataArgs receivedDataArgs)
-        {
+        public override void HandleClientReceivedDataArgs(ClientReceivedDataArgs receivedDataArgs) {
             OnClientReceivedData?.Invoke(receivedDataArgs);
         }
         /// <summary>
@@ -228,8 +214,7 @@ namespace FishNet.Transporting.Tugboat
         /// Handles a ClientReceivedDataArgs.
         /// </summary>
         /// <param name="receivedDataArgs"></param>
-        public override void HandleServerReceivedDataArgs(ServerReceivedDataArgs receivedDataArgs)
-        {
+        public override void HandleServerReceivedDataArgs(ServerReceivedDataArgs receivedDataArgs) {
             OnServerReceivedData?.Invoke(receivedDataArgs);
         }
         #endregion
@@ -241,8 +226,7 @@ namespace FishNet.Transporting.Tugboat
         /// <param name="channelId">Channel to use.</param>
         /// <param name="segment">Data to send.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SendToServer(byte channelId, ArraySegment<byte> segment)
-        {
+        public override void SendToServer(byte channelId, ArraySegment<byte> segment) {
             SanitizeChannel(ref channelId);
             _client.SendToServer(channelId, segment);
         }
@@ -253,8 +237,7 @@ namespace FishNet.Transporting.Tugboat
         /// <param name="segment"></param>
         /// <param name="connectionId"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SendToClient(byte channelId, ArraySegment<byte> segment, int connectionId)
-        {
+        public override void SendToClient(byte channelId, ArraySegment<byte> segment, int connectionId) {
             SanitizeChannel(ref channelId);
             _server.SendToClient(channelId, segment, connectionId);
         }
@@ -265,12 +248,11 @@ namespace FishNet.Transporting.Tugboat
         /// Sets which PacketLayer to use with LiteNetLib.
         /// </summary>
         /// <param name="packetLayer"></param>
-        public void SetPacketLayer(PacketLayerBase packetLayer)
-        {
+        public void SetPacketLayer(PacketLayerBase packetLayer) {
             _packetLayer = packetLayer;
-            if (GetConnectionState(true) != LocalConnectionState.Stopped)
+            if(GetConnectionState(true) != LocalConnectionState.Stopped)
                 base.NetworkManager.LogWarning("PacketLayer is set but will not be applied until the server stops.");
-            if (GetConnectionState(false) != LocalConnectionState.Stopped)
+            if(GetConnectionState(false) != LocalConnectionState.Stopped)
                 base.NetworkManager.LogWarning("PacketLayer is set but will not be applied until the client stops.");
 
             _server.Initialize(this, _unreliableMTU, _packetLayer);
@@ -281,8 +263,7 @@ namespace FishNet.Transporting.Tugboat
         /// </summary>
         /// <param name="asServer">True to get the timeout for the server socket, false for the client socket.</param>
         /// <returns></returns>
-        public override float GetTimeout(bool asServer)
-        {
+        public override float GetTimeout(bool asServer) {
             //Server and client uses the same timeout.
             return (float)_timeout;
         }
@@ -290,24 +271,21 @@ namespace FishNet.Transporting.Tugboat
         /// Sets how long in seconds until either the server or client socket must go without data before being timed out.
         /// </summary>
         /// <param name="asServer">True to set the timeout for the server socket, false for the client socket.</param>
-        public override void SetTimeout(float value, bool asServer)
-        {
+        public override void SetTimeout(float value, bool asServer) {
             _timeout = (ushort)value;
         }
         /// <summary>
         /// Returns the maximum number of clients allowed to connect to the server. If the transport does not support this method the value -1 is returned.
         /// </summary>
         /// <returns></returns>
-        public override int GetMaximumClients()
-        {
+        public override int GetMaximumClients() {
             return _server.GetMaximumClients();
         }
         /// <summary>
         /// Sets maximum number of clients allowed to connect to the server. If applied at runtime and clients exceed this value existing clients will stay connected but new clients may not connect.
         /// </summary>
         /// <param name="value"></param>
-        public override void SetMaximumClients(int value)
-        {
+        public override void SetMaximumClients(int value) {
             _maximumClients = value;
             _server.SetMaximumClients(value);
         }
@@ -315,15 +293,13 @@ namespace FishNet.Transporting.Tugboat
         /// Sets which address the client will connect to.
         /// </summary>
         /// <param name="address"></param>
-        public override void SetClientAddress(string address)
-        {
+        public override void SetClientAddress(string address) {
             _clientAddress = address;
         }
         /// <summary>
         /// Gets which address the client will connect to.
         /// </summary>
-        public override string GetClientAddress()
-        {
+        public override string GetClientAddress() {
             return _clientAddress;
         }
 
@@ -331,9 +307,8 @@ namespace FishNet.Transporting.Tugboat
         /// Sets which address the server will bind to.
         /// </summary>
         /// <param name="address"></param>
-        public override void SetServerBindAddress(string address, IPAddressType addressType)
-        {
-            if (addressType == IPAddressType.IPv4)
+        public override void SetServerBindAddress(string address, IPAddressType addressType) {
+            if(addressType == IPAddressType.IPv4)
                 _ipv4BindAddress = address;
             else
                 _ipv6BindAddress = address;
@@ -342,9 +317,8 @@ namespace FishNet.Transporting.Tugboat
         /// Gets which address the server will bind to.
         /// </summary>
         /// <param name="address"></param>
-        public override string GetServerBindAddress(IPAddressType addressType)
-        {
-            if (addressType == IPAddressType.IPv4)
+        public override string GetServerBindAddress(IPAddressType addressType) {
+            if(addressType == IPAddressType.IPv4)
                 return _ipv4BindAddress;
             else
                 return _ipv6BindAddress;
@@ -353,16 +327,14 @@ namespace FishNet.Transporting.Tugboat
         /// Sets which port to use.
         /// </summary>
         /// <param name="port"></param>
-        public override void SetPort(ushort port)
-        {
+        public override void SetPort(ushort port) {
             _port = port;
         }
         /// <summary>
         /// Gets which port to use.
         /// </summary>
         /// <param name="port"></param>
-        public override ushort GetPort()
-        {
+        public override ushort GetPort() {
             return _port;
         }
         #endregion
@@ -372,9 +344,8 @@ namespace FishNet.Transporting.Tugboat
         /// Starts the local server or client using configured settings.
         /// </summary>
         /// <param name="server">True to start server.</param>
-        public override bool StartConnection(bool server)
-        {
-            if (server)
+        public override bool StartConnection(bool server) {
+            if(server)
                 return StartServer();
             else
                 return StartClient(_clientAddress);
@@ -384,9 +355,8 @@ namespace FishNet.Transporting.Tugboat
         /// Stops the local server or client.
         /// </summary>
         /// <param name="server">True to stop server.</param>
-        public override bool StopConnection(bool server)
-        {
-            if (server)
+        public override bool StopConnection(bool server) {
+            if(server)
                 return StopServer();
             else
                 return StopClient();
@@ -399,16 +369,14 @@ namespace FishNet.Transporting.Tugboat
         /// <param name="immediately">True to abrutly stop the client socket. The technique used to accomplish immediate disconnects may vary depending on the transport.
         /// When not using immediate disconnects it's recommended to perform disconnects using the ServerManager rather than accessing the transport directly.
         /// </param>
-        public override bool StopConnection(int connectionId, bool immediately)
-        {
+        public override bool StopConnection(int connectionId, bool immediately) {
             return _server.StopConnection(connectionId);
         }
 
         /// <summary>
         /// Stops both client and server.
         /// </summary>
-        public override void Shutdown()
-        {
+        public override void Shutdown() {
             //Stops client then server connections.
             StopConnection(false);
             StopConnection(true);
@@ -418,8 +386,7 @@ namespace FishNet.Transporting.Tugboat
         /// <summary>
         /// Starts server.
         /// </summary>
-        private bool StartServer()
-        {
+        private bool StartServer() {
             _server.Initialize(this, _unreliableMTU, _packetLayer);
             UpdateTimeout();
             return _server.StartConnection(_port, _maximumClients, _ipv4BindAddress, _ipv6BindAddress);
@@ -428,8 +395,7 @@ namespace FishNet.Transporting.Tugboat
         /// <summary>
         /// Stops server.
         /// </summary>
-        private bool StopServer()
-        {
+        private bool StopServer() {
             return _server.StopConnection();
         }
 
@@ -437,8 +403,7 @@ namespace FishNet.Transporting.Tugboat
         /// Starts the client.
         /// </summary>
         /// <param name="address"></param>
-        private bool StartClient(string address)
-        {
+        private bool StartClient(string address) {
             _client.Initialize(this, _unreliableMTU, _packetLayer);
             UpdateTimeout();
             return _client.StartConnection(address, _port);
@@ -447,8 +412,7 @@ namespace FishNet.Transporting.Tugboat
         /// <summary>
         /// Updates clients timeout values.
         /// </summary>
-        private void UpdateTimeout()
-        {
+        private void UpdateTimeout() {
             //If server is running set timeout to max. This is for host only.
             //int timeout = (GetConnectionState(true) != LocalConnectionState.Stopped) ? MAX_TIMEOUT_SECONDS : _timeout;
             int timeout = (Application.isEditor) ? MAX_TIMEOUT_SECONDS : _timeout;
@@ -458,8 +422,7 @@ namespace FishNet.Transporting.Tugboat
         /// <summary>
         /// Stops the client.
         /// </summary>
-        private bool StopClient()
-        {
+        private bool StopClient() {
             return _client.StopConnection();
         }
         #endregion
@@ -470,10 +433,8 @@ namespace FishNet.Transporting.Tugboat
         /// If channelId is invalid then channelId becomes forced to reliable.
         /// </summary>
         /// <param name="channelId"></param>
-        private void SanitizeChannel(ref byte channelId)
-        {
-            if (channelId < 0 || channelId >= TransportManager.CHANNEL_COUNT)
-            {
+        private void SanitizeChannel(ref byte channelId) {
+            if(channelId < 0 || channelId >= TransportManager.CHANNEL_COUNT) {
                 NetworkManager.LogWarning($"Channel of {channelId} is out of range of supported channels. Channel will be defaulted to reliable.");
                 channelId = 0;
             }
@@ -484,19 +445,17 @@ namespace FishNet.Transporting.Tugboat
         /// </summary>
         /// <param name="channel"></param>
         /// <returns></returns>
-        public override int GetMTU(byte channel)
-        {
+        public override int GetMTU(byte channel) {
             return _unreliableMTU;
         }
         #endregion
 
         #region Editor.
 #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (_unreliableMTU < 0)
+        private void OnValidate() {
+            if(_unreliableMTU < 0)
                 _unreliableMTU = MINIMUM_UDP_MTU;
-            else if (_unreliableMTU > MAXIMUM_UDP_MTU)
+            else if(_unreliableMTU > MAXIMUM_UDP_MTU)
                 _unreliableMTU = MAXIMUM_UDP_MTU;
         }
 #endif

@@ -103,13 +103,19 @@ public class SessionManager : NetworkBehaviour {
         ClientInstanceAnnouncer.OnPlayerUpdated -= ClientInstanceAnnouncer_OnUpdated;
     }
 
+    [Server]
+    public void StartSessionTimer() {
+        Debug.Log($"SERVER: Starting TImer");
+        _timeRemaining.StartTimer((sessionMinutes * 60f) + warmUpTimeSeconds);
+        _timeRemaining.Dirty();
+    }
+
     public override void OnStartServer() {
         base.OnStartServer();
         Debug.Log($"Session Manager Start Server");
         sessionID = (uint)Time.time.GetHashCode();
         redPlayers.Clear();
         bluePlayers.Clear();
-        _timeRemaining.StartTimer((sessionMinutes * 60f) + warmUpTimeSeconds);
     }
 
     public override void OnStopServer() {
@@ -135,6 +141,7 @@ public class SessionManager : NetworkBehaviour {
         if(!_timeRemaining.Paused) {
             _timeRemaining.Update(Time.deltaTime);
         }
+        //Debug.Log($"FURY: Time = {_timeRemaining.Remaining}");
     }
 
     private void LateUpdate() {
@@ -485,6 +492,9 @@ public class SessionManager : NetworkBehaviour {
         Debug.Log($"Sync Dict. Changed OP = {op}, {key}, score = {value?.score} team = {value?.team}, {asServer}");
         switch(op) {
             case SyncDictionaryOperation.Add:
+                if(redPlayers.Count + bluePlayers.Count == 1 && asServer) {
+                    StartSessionTimer();
+                }
                 if(value.team == UserData.Team.Red) {
                     sessionInformationCanvas.AddRedPlayer(value.userName, value.score);
                 } else {
@@ -495,6 +505,9 @@ public class SessionManager : NetworkBehaviour {
                 sessionInformationCanvas.RemovePlayerLog(key);
                 break;
             case SyncDictionaryOperation.Set:
+                if(redPlayers.Count + bluePlayers.Count == 1 && asServer) {
+                    StartSessionTimer();
+                }
                 if(value.team == UserData.Team.Red) {
                     sessionInformationCanvas.AddRedPlayer(value.userName, value.score);
                 } else {

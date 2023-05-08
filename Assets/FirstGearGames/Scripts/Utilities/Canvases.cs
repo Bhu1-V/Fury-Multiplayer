@@ -9,7 +9,7 @@ namespace FirstGearGames.Utilities.Objects {
 
         /// <returns>Returns true part is within whole.</returns>
         public static void SetActive(this CanvasGroup group, bool active, bool setAlpha) {
-            Debug.Log($"{group.gameObject} Canvas Group Set Active Called with active = {active}, setAlpha = {setAlpha}");
+            //Debug.Log($"{group.gameObject} Canvas Group Set Active Called with active = {active}, setAlpha = {setAlpha}");
             if(group == null)
                 return;
 
