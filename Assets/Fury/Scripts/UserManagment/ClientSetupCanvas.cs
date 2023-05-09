@@ -127,6 +127,8 @@ public class ClientSetupCanvas : MonoBehaviour {
         //}
 
         // Start Client
+        _networkManager.ServerManager.StartConnection();
+
         _networkManager.ClientManager.StartConnection();
         GameplayCanvases.Instance.SetGameState(GameplayCanvases.GamePlayStates.Playing);
     }

@@ -168,6 +168,18 @@ namespace Fury.Weapons {
             _currentReserveAmmunition = _maximumReverseAmmunition;
         }
 
+        public override void SetADS(NetworkRoles networkRoles, bool adsOn) {
+            base.SetADS(networkRoles, adsOn);
+            bool owner = networkRoles.Contains(NetworkRoles.Owner);
+            if(owner) {
+                if(adsOn) {
+                    base.FirstPersonModel.SetADS();
+                } else {
+                    base.FirstPersonModel.ResetADS();
+                }
+            }
+        }
+
         /// <summary>
         /// Called when this weapon fires.
         /// </summary>

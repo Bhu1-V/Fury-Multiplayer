@@ -150,6 +150,7 @@ namespace Fury.Characters.Weapons {
                 CheckQueueSwitchWeapon();
                 CheckQueueReloadWeapon();
                 CheckFire();
+                CheckAim();
             }
         }
 
@@ -825,6 +826,14 @@ namespace Fury.Characters.Weapons {
             CmdFire(base.TimeManager.GetPreciseTick(TickType.Tick), _cameraTransform.position, _cameraTransform.forward);
         }
 
+        [Client(Logging = LoggingType.Off)]
+        private void CheckAim() {
+            if(!WeaponIndexValid())
+                return;
+
+            ToogleAds(Input.GetKey(KeyCode.Mouse1) && !Weapon.isReloading && !SessionManager.Instance.GetPause());
+        }
+
         /// <summary>
         /// Returns if there is ammunition available to fire.
         /// </summary>
@@ -877,6 +886,10 @@ namespace Fury.Characters.Weapons {
         /// </summary>
         private void Fire() {
             Fire(default, _cameraTransform.position, _cameraTransform.forward);
+        }
+
+        private void ToogleAds(bool isAds) {
+            Weapon.SetADS(ReturnNetworkRoles(), isAds);
         }
 
         /// <summary>

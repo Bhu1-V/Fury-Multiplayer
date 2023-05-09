@@ -192,6 +192,7 @@ namespace Fury.Weapons {
         [Tooltip("Audio prefab to spawn when weapon impacts a character.")]
         [SerializeField]
         protected GameObject CharacterImpactAudioPrefab;
+        public bool isReloading;
         #endregion
 
         #region Const.
@@ -245,6 +246,9 @@ namespace Fury.Weapons {
         /// </summary>
         public virtual void RemoveFromInventory() {
             InInventory = false;
+        }
+
+        public virtual void SetADS(NetworkRoles networkRoles, bool adsOn) {
         }
 
         /// <summary>
@@ -327,11 +331,12 @@ namespace Fury.Weapons {
         /// <summary>
         /// Performs a reload.
         /// </summary>
-        public virtual void Reload(NetworkRoles networkRoles, bool instant) { }
+        public virtual void Reload(NetworkRoles networkRoles, bool instant) { isReloading = true; }
         /// <summary>
         /// Received on the owner after server has confirmed a reload finished.
         /// </summary>
         public virtual void ConfirmReload() {
+            isReloading = false;
             OnServerConfirmReload?.Invoke(this);
         }
         /// <summary>

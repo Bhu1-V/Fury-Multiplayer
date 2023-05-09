@@ -179,6 +179,11 @@ namespace Fury.Characters.Motors {
         //}
         #endregion
 
+        [Header("Sway Settings")]
+        [SerializeField] private float smooth;
+        [SerializeField] private float multiplier;
+        [SerializeField] private Transform weaponParent;
+
         /// <summary>
         /// Updates looking using input.
         /// </summary>
@@ -187,12 +192,21 @@ namespace Fury.Characters.Motors {
 
             LookPosition = transform.position + _cameraOffset;
 
+            // get mouse input
+            float mouseY = SessionManager.Instance.GetPause() ? 0 : Input.GetAxis("Mouse Y");
+            float mouseX = SessionManager.Instance.GetPause() ? 0 : Input.GetAxis("Mouse X");
+
+            // calculate target rotation
+            Quaternion rotationX = Quaternion.AngleAxis(-mouseY, Vector3.right);
+            Quaternion rotationY = Quaternion.AngleAxis(mouseX, Vector3.up);
+
+
             //If has health then look normally.
             if(_health.CurrentHealth > 0) {
                 //Yaw.
-                transform.Rotate(SessionManager.Instance.GetPause() ? Vector3.zero : new Vector3(0f, Input.GetAxis("Mouse X"), 0f) * _yawRate);
+                transform.Rotate(new Vector3(0f, mouseX, 0f) * _yawRate);
                 //Pitch.
-                float pitch = _lookDirection.x + ((SessionManager.Instance.GetPause() ? 0 : Input.GetAxis("Mouse Y")) * _pitchRate);
+                float pitch = _lookDirection.x + (mouseY * _pitchRate);
                 /* If not signed on X then make it
                  * signed for easy clamping. */
                 if(pitch > 180f)
@@ -200,6 +214,11 @@ namespace Fury.Characters.Motors {
                 pitch = Mathf.Clamp(pitch, -89f, 89f);
 
                 _lookDirection = new Vector3(pitch, transform.eulerAngles.y, transform.eulerAngles.z);
+
+                Quaternion weaponRotation = rotationX * rotationY;
+
+                // rotate 
+                weaponParent.localRotation = Quaternion.Slerp(weaponParent.localRotation, weaponRotation, smooth * Time.deltaTime);
             }
             //Otherwise look at transform position.
             else {
